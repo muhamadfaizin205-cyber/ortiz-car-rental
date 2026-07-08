@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  cars        Car[]
+
+  @@map("categories")
+}
+
+model Car {
+  id            Int       @id @default(autoincrement())
+  categoryId    Int       @map("category_id")
+  name          String
+  slug          String    @unique
+  description   String?
+  imagePath     String?   @map("image_path")
+  seats         Int       @default(4)
+  fuelType      String    @default("Gasoline") @map("fuel_type")
+  transmission  String    @default("Automatic")
+  price         Int       @default(0)
+  priceDuration String    @default("day") @map("price_duration")
+  notes         String?
+  isAvailable   Boolean   @default(true) @map("is_available")
+  sortOrder     Int       @default(0) @map("sort_order")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+
+  @@index([categoryId, isAvailable])
+  @@map("cars")
+}
+
+model Article {
+  id              Int       @id @default(autoincrement())
+  title           String
+  slug            String    @unique
+  content         String
+  imagePath       String?   @map("image_path")
+  isPublished     Boolean   @default(false) @map("is_published")
+  publishedAt     DateTime? @map("published_at")
+  metaDescription String?   @map("meta_description")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([isPublished, publishedAt])
+  @@map("articles")
+}
+
+model Booking {
+  id              Int      @id @default(autoincrement())
+  carId           Int      @map("car_id")
+  bookingCode     String   @unique @map("booking_code")
+  customerName    String   @map("customer_name")
+  customerEmail   String?  @map("customer_email")
+  customerPhone   String   @map("customer_phone")
+  pickupDate      DateTime @map("pickup_date")
+  returnDate      DateTime @map("return_date")
+  pickupLocation  String?  @map("pickup_location")
+  totalPrice      Int      @default(0) @map("total_price")
+  status          String   @default("pending")
+  notes           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  car             Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([status, pickupDate])
+  @@map("bookings")
+}
