@@ -5,6 +5,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap');
 
 @layer base {
+  :root {
+    --color-primary: #CAA251;
+    --color-dark: #111827;
+    --color-darker: #0B0B0B;
+  }
   h1, h2, h3, h4 {
     font-family: 'Rajdhani', sans-serif;
     font-weight: 700;

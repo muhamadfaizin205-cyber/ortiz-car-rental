@@ -129,15 +129,17 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Inject dynamic colors from database settings */}
+      <style>{`:root { --color-primary: ${s.colors.primary}; --color-dark: ${s.colors.dark}; --color-darker: ${s.colors.darker}; }`}</style>
       <ScrollToTop />
       <Navbar />
 
       {/* Hero */}
       <section className="hero-bg h-[70vh] min-h-[400px] flex flex-col justify-center items-center text-center px-4">
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 tracking-wider">{s.hero.title} <span style={{ color: s.colors.primary }}>{s.hero.titleHighlight}</span></h1>
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 tracking-wider">{s.hero.title} <span className="text-gold">{s.hero.titleHighlight}</span></h1>
         <p className="text-gray-200 max-w-2xl text-sm md:text-base mb-6 md:mb-8 leading-relaxed px-2">{s.hero.subtitle}</p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <a href="#cars" style={{ background: s.colors.primary }} className="text-dark font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-colors flex items-center justify-center"><i className="ri-calendar-check-line mr-2" /> Book Now</a>
+          <a href="#cars" className="bg-gold text-dark font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-colors flex items-center justify-center"><i className="ri-calendar-check-line mr-2" /> Book Now</a>
           <a href="#contact" className="border border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-dark transition-colors flex items-center justify-center"><i className="ri-map-pin-fill mr-2" /> Our Location</a>
         </div>
       </section>

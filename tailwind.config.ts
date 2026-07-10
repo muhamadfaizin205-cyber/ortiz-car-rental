@@ -8,9 +8,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        gold: "#CAA251",
-        dark: "#111827",
-        darker: "#0B0B0B",
+        gold: "var(--color-primary, #CAA251)",
+        dark: "var(--color-dark, #111827)",
+        darker: "var(--color-darker, #0B0B0B)",
         light: "#F9FAFB",
       },
       fontFamily: {
