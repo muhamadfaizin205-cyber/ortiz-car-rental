@@ -5,6 +5,7 @@ import Navbar from "@/components/site/Navbar";
 import ScrollToTop from "@/components/site/ScrollToTop";
 
 import Carousel from "@/components/site/Carousel";
+import ReviewCarousel from "@/components/site/ReviewCarousel";
 
 export const revalidate = 10;
 
@@ -192,7 +193,7 @@ export default async function HomePage() {
       </section>
 
       {/* Customer Reviews */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <p className="text-gold font-bold uppercase tracking-wider text-sm">Testimonials</p>
@@ -208,45 +209,9 @@ export default async function HomePage() {
               </div>
             )}
           </div>
-
-          {reviews.length > 0 ? (
-            <Carousel itemCount={reviews.length}>
-              {reviews.map((review: any) => (
-                <div key={review.id} className="min-w-[300px] sm:min-w-[350px] max-w-[380px] snap-start flex-shrink-0">
-                  <div className="bg-light rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow h-full flex flex-col">
-                    {/* Stars */}
-                    <div className="flex mb-4">
-                      {[1,2,3,4,5].map(i => (
-                        <i key={i} className={`text-lg ${i <= review.rating ? "ri-star-fill text-gold" : "ri-star-line text-gray-300"}`} />
-                      ))}
-                    </div>
-
-                    {/* Comment */}
-                    <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">&ldquo;{review.comment}&rdquo;</p>
-
-                    {/* Customer */}
-                    <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                      <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold text-sm">
-                        {review.customer_name?.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-dark text-sm">{review.customer_name}</p>
-                        <p className="text-xs text-gray-400">Verified Customer</p>
-                      </div>
-                      <i className="ri-verified-badge-fill text-blue-500 ml-auto" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Carousel>
-          ) : (
-            <div className="text-center py-8 text-gray-400">
-              <i className="ri-star-smile-line text-4xl block mb-3" />
-              <p>No reviews yet. Be the first to share your experience!</p>
-            </div>
-          )}
-
-          {/* CTA removed - review link is shared privately by admin to customers */}
+        </div>
+        <div className="max-w-[100vw]">
+          <ReviewCarousel reviews={reviews} />
         </div>
       </section>
 
