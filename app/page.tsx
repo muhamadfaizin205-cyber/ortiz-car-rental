@@ -224,12 +224,7 @@ export default async function HomePage() {
             </div>
           )}
 
-          {/* CTA to leave review */}
-          <div className="text-center mt-10">
-            <a href="/review" className="inline-flex items-center border-2 border-gold text-gold font-semibold px-8 py-3 rounded-xl hover:bg-gold hover:text-dark transition-colors">
-              <i className="ri-edit-line mr-2" /> Write a Review
-            </a>
-          </div>
+          {/* CTA removed - review link is shared privately by admin to customers */}
         </div>
       </section>
 
