@@ -85,7 +85,7 @@ function CarSection({ title, desc, cars }: { title: string; desc: string; cars: 
 
 export default async function HomePage() {
   const s = await getSettings();
-  let luxuryCars: any[] = [], premiumCars: any[] = [], cityCars: any[] = [], familyCars: any[] = [], articles: any[] = [];
+  let luxuryCars: any[] = [], premiumCars: any[] = [], cityCars: any[] = [], familyCars: any[] = [], articles: any[] = [], reviews: any[] = [];
   try {
     [luxuryCars, premiumCars, cityCars, familyCars, articles] = await Promise.all([
       prisma.car.findMany({ where: { isAvailable: true, category: { slug: "luxury" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
@@ -94,6 +94,9 @@ export default async function HomePage() {
       prisma.car.findMany({ where: { isAvailable: true, category: { slug: "family" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
       prisma.article.findMany({ where: { isPublished: true, publishedAt: { lte: new Date() } }, orderBy: { publishedAt: "desc" }, take: 4 }),
     ]);
+    try {
+      reviews = await prisma.$queryRawUnsafe(`SELECT * FROM reviews WHERE is_approved = true ORDER BY created_at DESC LIMIT 10`) as any[];
+    } catch {}
   } catch (e) { console.log("DB not ready yet"); }
 
   const sections = [
@@ -164,6 +167,68 @@ export default async function HomePage() {
                 <div key={v.t} className="flex flex-col space-y-2"><i className={`${v.i} text-gold text-2xl bg-gold/10 w-12 h-12 flex items-center justify-center rounded-full`} /><h4 className="font-bold">{v.t}</h4></div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Reviews */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <p className="text-gold font-bold uppercase tracking-wider text-sm">Testimonials</p>
+            <h2 className="text-3xl font-bold text-dark mt-2">WHAT OUR CUSTOMERS SAY</h2>
+            {reviews.length > 0 && (
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <div className="flex">
+                  {[1,2,3,4,5].map(i => (
+                    <i key={i} className={`ri-star-fill text-xl ${i <= Math.round(reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length) ? "text-gold" : "text-gray-300"}`} />
+                  ))}
+                </div>
+                <span className="text-gray-500 text-sm">({reviews.length} reviews)</span>
+              </div>
+            )}
+          </div>
+
+          {reviews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reviews.slice(0, 6).map((review: any) => (
+                <div key={review.id} className="bg-light rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                  {/* Stars */}
+                  <div className="flex mb-4">
+                    {[1,2,3,4,5].map(i => (
+                      <i key={i} className={`text-lg ${i <= review.rating ? "ri-star-fill text-gold" : "ri-star-line text-gray-300"}`} />
+                    ))}
+                  </div>
+
+                  {/* Comment */}
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4">&ldquo;{review.comment}&rdquo;</p>
+
+                  {/* Customer */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                    <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold text-sm">
+                      {review.customer_name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-dark text-sm">{review.customer_name}</p>
+                      <p className="text-xs text-gray-400">Verified Customer</p>
+                    </div>
+                    <i className="ri-verified-badge-fill text-blue-500 ml-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <i className="ri-star-smile-line text-4xl block mb-3" />
+              <p>No reviews yet. Be the first to share your experience!</p>
+            </div>
+          )}
+
+          {/* CTA to leave review */}
+          <div className="text-center mt-10">
+            <a href="/review" className="inline-flex items-center border-2 border-gold text-gold font-semibold px-8 py-3 rounded-xl hover:bg-gold hover:text-dark transition-colors">
+              <i className="ri-edit-line mr-2" /> Write a Review
+            </a>
           </div>
         </div>
       </section>

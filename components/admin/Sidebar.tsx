@@ -9,6 +9,7 @@ const links = [
   { href: "/admin/cars", label: "Cars", icon: "ri-car-line" },
   { href: "/admin/articles", label: "Articles", icon: "ri-article-line" },
   { href: "/admin/bookings", label: "Bookings", icon: "ri-calendar-check-line" },
+  { href: "/admin/reviews", label: "Reviews", icon: "ri-star-line" },
 ];
 
 export default function AdminSidebar() {
