@@ -15,9 +15,9 @@ export default function ReviewCarousel({ reviews }: { reviews: Review[] }) {
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el || reviews.length === 0) return;
+    if (!el || !shouldAutoScroll) return;
 
-    const speed = 0.5; // pixels per frame
+    const speed = 0.5;
     let animId: number;
 
     function step() {
@@ -28,7 +28,6 @@ export default function ReviewCarousel({ reviews }: { reviews: Review[] }) {
 
       el.scrollLeft += speed;
 
-      // When we've scrolled past the first set, jump back seamlessly
       const halfWidth = el.scrollWidth / 2;
       if (el.scrollLeft >= halfWidth) {
         el.scrollLeft = 0;
@@ -39,7 +38,7 @@ export default function ReviewCarousel({ reviews }: { reviews: Review[] }) {
 
     animId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animId);
-  }, [paused, reviews.length]);
+  }, [paused, shouldAutoScroll]);
 
   if (reviews.length === 0) {
     return (
@@ -50,8 +49,11 @@ export default function ReviewCarousel({ reviews }: { reviews: Review[] }) {
     );
   }
 
-  // Duplicate reviews for seamless infinite loop
-  const items = [...reviews, ...reviews];
+  // Only auto-scroll if 4+ reviews, otherwise show static
+  const shouldAutoScroll = reviews.length >= 4;
+
+  // Duplicate for seamless loop (only if auto-scrolling)
+  const items = shouldAutoScroll ? [...reviews, ...reviews] : reviews;
 
   return (
     <div
@@ -61,14 +63,16 @@ export default function ReviewCarousel({ reviews }: { reviews: Review[] }) {
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setTimeout(() => setPaused(false), 3000)}
     >
-      {/* Fade edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+      {/* Fade edges - only for auto-scroll */}
+      {shouldAutoScroll && <>
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+      </>}
 
       {/* Scrolling container */}
       <div
         ref={scrollRef}
-        className="flex gap-5 overflow-x-hidden"
+        className={`flex gap-5 ${shouldAutoScroll ? "overflow-x-hidden" : "overflow-x-auto justify-center flex-wrap px-4 sm:px-6"}`}
         style={{ scrollBehavior: "auto" }}
       >
         {items.map((review, idx) => (
