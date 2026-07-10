@@ -148,7 +148,7 @@ export default async function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 relative -mt-12 sm:-mt-16 z-10 hidden md:block">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {[{ icon: "ri-team-line", t: "Group Event", d: "Make your group event unforgettable with our group event services." }, { icon: "ri-flight-takeoff-line", t: "Airport Transfer", d: "Escape the hassles of airport travel with our airport transfer service." }, { icon: "ri-camera-lens-line", t: "Photo Session", d: "Capture your cherished moments with our professional photo session service." }].map((f) => (
-            <div key={f.t} className="bg-dark/90 backdrop-blur text-white p-6 rounded shadow-lg border-b-2 border-gold"><i className={`${f.icon} text-4xl text-gold mb-4`} /><h3 className="text-lg font-bold mb-2">{f.t}</h3><p className="text-sm text-gray-400">{f.d}</p></div>
+            <div key={f.t} className="bg-[#111827] text-white p-6 rounded-xl shadow-lg border-b-2 border-gold"><i className={`${f.icon} text-4xl text-gold mb-4 block`} /><h3 className="text-lg font-bold mb-2 text-white">{f.t}</h3><p className="text-sm text-gray-300">{f.d}</p></div>
           ))}
         </div>
       </section>
