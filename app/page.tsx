@@ -28,8 +28,12 @@ function CarCard({ car }: { car: any }) {
   const imgSrc = getCarImage(car);
   return (
     <div className="bg-white rounded-2xl border-2 border-dashed border-gold/40 p-4 sm:p-5 hover:border-gold hover:shadow-xl transition-all duration-300 flex flex-col">
-      <div className="bg-gray-50 rounded-xl overflow-hidden mb-4 h-44 sm:h-48">
-        <img src={imgSrc} alt={car.name} loading="lazy" className="w-full h-full object-cover" />
+      <div className="bg-gray-100 rounded-xl overflow-hidden mb-4 h-44 sm:h-48 flex items-center justify-center">
+        {imgSrc ? (
+          <img src={imgSrc} alt={car.name} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML = '<i class="ri-car-line text-5xl text-gray-300"></i>'; }} />
+        ) : (
+          <i className="ri-car-line text-5xl text-gray-300" />
+        )}
       </div>
       <h3 className="font-bold text-xl text-dark mb-2">{car.name}</h3>
       <p className="text-sm text-gray-500 leading-relaxed mb-5 min-h-[60px]">{car.description}</p>
@@ -62,7 +66,6 @@ function CarCard({ car }: { car: any }) {
 }
 
 function CarSection({ title, desc, cars }: { title: string; desc: string; cars: any[] }) {
-  if (cars.length === 0) return null;
   return (
     <div>
       <div className="flex justify-between items-end mb-6 sm:mb-8 border-b pb-4">
@@ -72,13 +75,20 @@ function CarSection({ title, desc, cars }: { title: string; desc: string; cars: 
         </div>
         <span className="text-sm text-gold font-semibold hidden sm:block">{cars.length} units</span>
       </div>
-      <Carousel itemCount={cars.length}>
-        {cars.map((car) => (
-          <div key={car.id} className="min-w-[280px] sm:min-w-[320px] max-w-[340px] snap-start flex-shrink-0">
-            <CarCard car={car} />
-          </div>
-        ))}
-      </Carousel>
+      {cars.length > 0 ? (
+        <Carousel itemCount={cars.length}>
+          {cars.map((car) => (
+            <div key={car.id} className="min-w-[280px] sm:min-w-[320px] max-w-[340px] snap-start flex-shrink-0">
+              <CarCard car={car} />
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl">
+          <i className="ri-car-line text-4xl text-gray-300 block mb-2" />
+          <p className="text-gray-400 text-sm">Coming soon — new cars will be added shortly</p>
+        </div>
+      )}
     </div>
   );
 }

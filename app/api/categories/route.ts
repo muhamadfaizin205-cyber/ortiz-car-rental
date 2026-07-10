@@ -14,7 +14,18 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const data = await req.json();
-  const category = await prisma.category.create({ data });
-  return NextResponse.json(category, { status: 201 });
+  try {
+    const body = await req.json();
+    const category = await prisma.category.create({
+      data: {
+        name: String(body.name),
+        slug: String(body.slug),
+        description: body.description || null,
+        isActive: body.isActive !== false, // default true
+      },
+    });
+    return NextResponse.json(category, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
