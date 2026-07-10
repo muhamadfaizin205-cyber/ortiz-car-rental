@@ -7,7 +7,7 @@ import ScrollToTop from "@/components/site/ScrollToTop";
 import Carousel from "@/components/site/Carousel";
 import ReviewCarousel from "@/components/site/ReviewCarousel";
 
-export const revalidate = 10;
+export const dynamic = "force-dynamic";
 
 async function getSettings(): Promise<SiteSettings> {
   try {
