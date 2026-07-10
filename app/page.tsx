@@ -30,7 +30,7 @@ function CarCard({ car }: { car: any }) {
     <div className="bg-white rounded-2xl border-2 border-dashed border-gold/40 p-4 sm:p-5 hover:border-gold hover:shadow-xl transition-all duration-300 flex flex-col">
       <div className="bg-gray-100 rounded-xl overflow-hidden mb-4 h-44 sm:h-48 flex items-center justify-center">
         {imgSrc ? (
-          <img src={imgSrc} alt={car.name} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML = '<i class="ri-car-line text-5xl text-gray-300"></i>'; }} />
+          <img src={imgSrc} alt={car.name} loading="lazy" className="w-full h-full object-cover" />
         ) : (
           <i className="ri-car-line text-5xl text-gray-300" />
         )}
