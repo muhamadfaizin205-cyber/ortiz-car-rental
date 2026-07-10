@@ -85,26 +85,36 @@ function CarSection({ title, desc, cars }: { title: string; desc: string; cars: 
 
 export default async function HomePage() {
   const s = await getSettings();
-  let luxuryCars: any[] = [], premiumCars: any[] = [], cityCars: any[] = [], familyCars: any[] = [], articles: any[] = [], reviews: any[] = [];
+  let categories: any[] = [], articles: any[] = [], reviews: any[] = [];
   try {
-    [luxuryCars, premiumCars, cityCars, familyCars, articles] = await Promise.all([
-      prisma.car.findMany({ where: { isAvailable: true, category: { slug: "luxury" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
-      prisma.car.findMany({ where: { isAvailable: true, category: { slug: "premium" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
-      prisma.car.findMany({ where: { isAvailable: true, category: { slug: "city" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
-      prisma.car.findMany({ where: { isAvailable: true, category: { slug: "family" } }, include: { category: true }, orderBy: { sortOrder: "asc" } }),
-      prisma.article.findMany({ where: { isPublished: true, publishedAt: { lte: new Date() } }, orderBy: { publishedAt: "desc" }, take: 4 }),
-    ]);
+    // Dynamically fetch ALL active categories with their cars
+    categories = await prisma.category.findMany({
+      where: { isActive: true },
+      include: {
+        cars: {
+          where: { isAvailable: true },
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+      orderBy: { id: "asc" },
+    });
+
+    articles = await prisma.article.findMany({
+      where: { isPublished: true, publishedAt: { lte: new Date() } },
+      orderBy: { publishedAt: "desc" },
+      take: 4,
+    });
+
     try {
       reviews = await prisma.$queryRawUnsafe(`SELECT * FROM reviews WHERE is_approved = true ORDER BY created_at DESC LIMIT 10`) as any[];
     } catch {}
   } catch (e) { console.log("DB not ready yet"); }
 
-  const sections = [
-    { title: "Luxury Car Price List", desc: "Elevate Your Bali Holiday Experience with Our Stunning Collection of Luxury Cars", cars: luxuryCars },
-    { title: "Premium Car Price List", desc: "ORTIZ Premium Car Collection. Make Your Dream of Luxury Driving in Bali a Reality", cars: premiumCars },
-    { title: "City Car Price List", desc: "Explore Bali with Ease and Affordability. ORTIZ City Car Collection", cars: cityCars },
-    { title: "Family Car Price List", desc: "Explore Bali Easily and Safely with family. ORTIZ Family Car Collection", cars: familyCars },
-  ];
+  const sections = categories.map(cat => ({
+    title: `${cat.name} Car Price List`,
+    desc: cat.description || `Browse our ${cat.name} car collection`,
+    cars: cat.cars,
+  }));
 
   return (
     <>
@@ -190,33 +200,35 @@ export default async function HomePage() {
           </div>
 
           {reviews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviews.slice(0, 6).map((review: any) => (
-                <div key={review.id} className="bg-light rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow">
-                  {/* Stars */}
-                  <div className="flex mb-4">
-                    {[1,2,3,4,5].map(i => (
-                      <i key={i} className={`text-lg ${i <= review.rating ? "ri-star-fill text-gold" : "ri-star-line text-gray-300"}`} />
-                    ))}
-                  </div>
-
-                  {/* Comment */}
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4">&ldquo;{review.comment}&rdquo;</p>
-
-                  {/* Customer */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                    <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold text-sm">
-                      {review.customer_name?.charAt(0).toUpperCase()}
+            <Carousel itemCount={reviews.length}>
+              {reviews.map((review: any) => (
+                <div key={review.id} className="min-w-[300px] sm:min-w-[350px] max-w-[380px] snap-start flex-shrink-0">
+                  <div className="bg-light rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow h-full flex flex-col">
+                    {/* Stars */}
+                    <div className="flex mb-4">
+                      {[1,2,3,4,5].map(i => (
+                        <i key={i} className={`text-lg ${i <= review.rating ? "ri-star-fill text-gold" : "ri-star-line text-gray-300"}`} />
+                      ))}
                     </div>
-                    <div>
-                      <p className="font-semibold text-dark text-sm">{review.customer_name}</p>
-                      <p className="text-xs text-gray-400">Verified Customer</p>
+
+                    {/* Comment */}
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">&ldquo;{review.comment}&rdquo;</p>
+
+                    {/* Customer */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                      <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold text-sm">
+                        {review.customer_name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-dark text-sm">{review.customer_name}</p>
+                        <p className="text-xs text-gray-400">Verified Customer</p>
+                      </div>
+                      <i className="ri-verified-badge-fill text-blue-500 ml-auto" />
                     </div>
-                    <i className="ri-verified-badge-fill text-blue-500 ml-auto" />
                   </div>
                 </div>
               ))}
-            </div>
+            </Carousel>
           ) : (
             <div className="text-center py-8 text-gray-400">
               <i className="ri-star-smile-line text-4xl block mb-3" />
