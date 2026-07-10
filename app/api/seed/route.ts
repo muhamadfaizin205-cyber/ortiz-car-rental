@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { hashSync } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const secret = searchParams.get("secret");

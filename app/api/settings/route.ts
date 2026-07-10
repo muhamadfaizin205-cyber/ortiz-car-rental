@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const rows: any[] = await prisma.$queryRawUnsafe(
